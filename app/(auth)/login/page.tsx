@@ -16,7 +16,6 @@ export default function Login() {
 			</div>
 			<div className="flex-1 mx-auto max-w-2xl">
 				<div className="flex flex-col px-8 pt-10 lg:px-14 xl:px-24">
-					{/* <LogoIcon className="self-center w-32 md:self-end" /> */}
 					<Icon icon="carbon:carbon-for-ibm-product" className="self-center w-10 md:self-end text-teal-500" />
 					<div className="pt-5 pb-6">
 						<h1 className="text-3xl font-bold tracking-wide leading-loose whitespace-nowrap">Hi, Welcome back!</h1>
