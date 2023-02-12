@@ -1,4 +1,5 @@
 import Icon from '@/components/Icon';
+import Link from 'next/link';
 export default function Login() {
 	return (
 		<div className="flex justify-between min-h-screen font-sans">
@@ -16,7 +17,7 @@ export default function Login() {
 			<div className="flex-1 mx-auto max-w-2xl">
 				<div className="flex flex-col px-8 pt-10 lg:px-14 xl:px-24">
 					{/* <LogoIcon className="self-center w-32 md:self-end" /> */}
-					<Icon icon="carbon:carbon-for-ibm-product" className="self-center w-32 md:self-end text-teal-500" />
+					<Icon icon="carbon:carbon-for-ibm-product" className="self-center w-10 md:self-end text-teal-500" />
 					<div className="pt-5 pb-6">
 						<h1 className="text-3xl font-bold tracking-wide leading-loose whitespace-nowrap">Hi, Welcome back!</h1>
 						<span className="font-light text-gray-500">Login now to manage your job made easy.</span>
@@ -80,13 +81,14 @@ export default function Login() {
 									Forgot password
 								</a>
 							</div>
-							<div className="pt-8">
-								<button
-									type="submit"
-									className="py-4 px-8 w-full text-white bg-rose-400 rounded-lg shadow-lg hover:bg-rose-500 focus:ring-4 focus:ring-rose-100 focus:outline-none"
+							<div className="pt-8 w-full">
+								<Link
+									href="/"
+									type="button"
+									className="py-4 px-8 w-full text-white bg-rose-400 rounded-lg shadow-lg hover:bg-rose-500 focus:ring-4 focus:ring-rose-100 focus:outline-none text-center"
 								>
 									Sign in
-								</button>
+								</Link>
 							</div>
 						</form>
 						<div className="">
