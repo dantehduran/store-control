@@ -6,7 +6,7 @@ const sidebarLinks = [
 	{ name: 'Products', icon: 'carbon:product', route: '/products' },
 	{ name: 'Analytics', icon: 'carbon:analytics', route: '/' },
 	{ name: 'Schedule', icon: 'carbon:calendar-heat-map', route: '/' },
-	{ name: 'Users', icon: 'carbon:user-multiple', route: '/' },
+	{ name: 'Users', icon: 'carbon:user-multiple', route: '/users' },
 	{ name: 'Settings', icon: 'carbon:settings', route: '/' },
 	{ name: 'Logout', icon: 'carbon:logout', route: '/' },
 ];
