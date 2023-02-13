@@ -2,12 +2,13 @@ import CustomIcon from '@/components/Icon';
 import Link from 'next/link';
 
 const sidebarLinks = [
-	{ name: 'Overview', icon: 'carbon:overlay' },
-	{ name: 'Products', icon: 'carbon:product' },
-	{ name: 'Analytics', icon: 'carbon:analytics' },
-	{ name: 'Schedule', icon: 'carbon:calendar-heat-map' },
-	{ name: 'Settings', icon: 'carbon:settings' },
-	{ name: 'Logout', icon: 'carbon:logout' },
+	{ name: 'Overview', icon: 'carbon:overlay', route: '/' },
+	{ name: 'Products', icon: 'carbon:product', route: '/products' },
+	{ name: 'Analytics', icon: 'carbon:analytics', route: '/' },
+	{ name: 'Schedule', icon: 'carbon:calendar-heat-map', route: '/' },
+	{ name: 'Users', icon: 'carbon:user-multiple', route: '/' },
+	{ name: 'Settings', icon: 'carbon:settings', route: '/' },
+	{ name: 'Logout', icon: 'carbon:logout', route: '/' },
 ];
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
@@ -20,7 +21,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 				<ul className="flex flex-col gap-y-6 pt-20">
 					{sidebarLinks.map((link) => (
 						<li key={link.name}>
-							<Link href={'/'} className="flex gap-x-4 items-center py-2 text-gray-500 hover:text-teal-600 group">
+							<Link
+								href={link.route}
+								className="flex gap-x-4 items-center py-2 text-gray-500 hover:text-teal-600 group"
+							>
 								<span className="absolute w-1.5 h-8 bg-teal-600 rounded-r-full left-0 scale-y-0 -translate-x-full group-hover:scale-y-100 group-hover:translate-x-0 transition-transform ease-in-out" />
 								<CustomIcon icon={link.icon} className="w-6 h-6 fill-current" />
 								<span>{link.name}</span>
@@ -29,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					))}
 				</ul>
 			</aside>
-			{children}
+			<main className="flex-1">{children}</main>
 		</div>
 	);
 }
