@@ -18,7 +18,7 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 // GET /api/user/:id
 async function handleGET(userId: string, res: NextApiResponse<any>) {
 	const user = await prisma.user.findUnique({
-		where: { id: Number(userId) },
+		where: { id: userId },
 		// include: { id: true, name: true, email: true, image: true },
 	});
 	res.json(user);
@@ -27,7 +27,7 @@ async function handleGET(userId: string, res: NextApiResponse<any>) {
 // GET /api/user/:id
 async function handlePOST(userId: string, res: NextApiResponse, req: NextApiRequest) {
 	const user = await prisma.user.update({
-		where: { id: Number(userId) },
+		where: { id: userId },
 		data: { ...req.body },
 	});
 	return res.json(user);
@@ -36,7 +36,7 @@ async function handlePOST(userId: string, res: NextApiResponse, req: NextApiRequ
 // DELETE /api/user/:id
 async function handleDELETE(userId: string, res: NextApiResponse) {
 	const user = await prisma.user.delete({
-		where: { id: Number(userId) },
+		where: { id: userId },
 	});
 	res.json(user);
 }

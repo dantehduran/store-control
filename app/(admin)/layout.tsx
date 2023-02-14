@@ -1,4 +1,6 @@
 import CustomIcon from '@/components/Icon';
+import { getCurrentUser } from '@/lib/session';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
 const sidebarLinks = [
@@ -10,7 +12,9 @@ const sidebarLinks = [
 	{ name: 'Settings', icon: 'carbon:settings', route: '/' },
 	{ name: 'Logout', icon: 'carbon:logout', route: '/' },
 ];
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+	const user = await getCurrentUser();
+	if (!user) redirect('/login');
 	return (
 		<div className="w-full min-h-screen font-sans text-gray-900 bg-gray-50 flex">
 			<aside className="py-6 px-10 w-64 border-r border-gray-200 h-screen sticky top-0 hidden md:block">

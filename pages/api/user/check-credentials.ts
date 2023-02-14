@@ -10,19 +10,18 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
 	}
 }
 
-const comparePassword = (hashPassword: string, unHashPassword: string) => {
+const comparePassword = (hashPassword: string | null, unHashPassword: string) => {
 	return bcrypt.compareSync(unHashPassword, hashPassword);
 };
 
 // POST /api/user
 async function handlePOST(res: NextApiResponse, req: NextApiRequest) {
 	const user = await prisma.user.findUnique({
-		where: { email: req.body.username },
+		where: { email: req.body.email },
 		select: {
 			id: true,
 			name: true,
 			email: true,
-			image: true,
 			password: true,
 		},
 	});
