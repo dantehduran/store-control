@@ -2,6 +2,7 @@ import CustomIcon from '@/components/Icon';
 import { getCurrentUser } from '@/lib/session';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import LogoutButton from './LogoutButton';
 
 const sidebarLinks = [
 	{ name: 'Overview', icon: 'carbon:overlay', route: '/' },
@@ -10,7 +11,6 @@ const sidebarLinks = [
 	{ name: 'Schedule', icon: 'carbon:calendar-heat-map', route: '/' },
 	{ name: 'Users', icon: 'carbon:user-multiple', route: '/users' },
 	{ name: 'Settings', icon: 'carbon:settings', route: '/' },
-	{ name: 'Logout', icon: 'carbon:logout', route: '/' },
 ];
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
 	const user = await getCurrentUser();
@@ -35,6 +35,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 							</Link>
 						</li>
 					))}
+					<li>
+						<LogoutButton />
+					</li>
 				</ul>
 			</aside>
 			<main className="flex-1">{children}</main>
