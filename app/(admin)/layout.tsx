@@ -13,7 +13,7 @@ const sidebarLinks = [
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
 		<div className="w-full min-h-screen font-sans text-gray-900 bg-gray-50 flex">
-			<aside className="py-6 px-10 w-64 border-r border-gray-200">
+			<aside className="py-6 px-10 w-64 border-r border-gray-200 h-screen sticky top-0 hidden md:block">
 				<CustomIcon
 					icon="carbon:carbon-for-ibm-product"
 					className="flex justify-center items-center w-28 text-teal-500 mx-auto"

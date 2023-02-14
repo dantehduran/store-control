@@ -23,34 +23,33 @@ export default function Login() {
 
 						<form action="">
 							<div className="pt-6">
-								<label htmlFor="email" className="font-light">
-									Email address
+								<label htmlFor="username" className="font-light text-gray-500">
+									Username
 								</label>
 								<div className="flex overflow-hidden items-center mt-2 w-full rounded-lg border border-gray-400 transition-all focus-within:shadow-lg focus-within:border-rose-400">
 									<div className="flex justify-center items-center pl-6 ">
 										<Icon
-											icon="carbon:email"
-											className="w-6 h-6 pointer-events-none flex justify-center items-center"
+											icon="carbon:user"
+											className="w-6 h-6 pointer-events-none flex justify-center items-center text-gray-500"
 										/>
 									</div>
-
 									<input
 										type="email"
-										name="email"
-										id="email"
-										placeholder="Enter your email"
+										name="username"
+										id="username"
+										placeholder="Enter your username"
 										className="p-4 w-full focus:outline-none font-light border-0 focus:ring-0"
 									/>
 								</div>
 							</div>
 							<div className="pt-6">
-								<label htmlFor="password" className="font-light">
+								<label htmlFor="password" className="font-light text-gray-500">
 									Password
 								</label>
 								<div className="flex overflow-hidden items-center mt-2 w-full rounded-lg border border-gray-400 transition-all focus-within:shadow-lg focus-within:border-rose-400">
 									<div className="flex justify-center items-center pl-6">
 										<Icon
-											className="w-6 h-6 pointer-events-none flex justify-center items-center"
+											className="w-6 h-6 pointer-events-none flex justify-center items-center text-gray-500"
 											icon="carbon:locked"
 										/>
 									</div>
