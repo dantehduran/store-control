@@ -4,7 +4,24 @@ const users = [
 	{ name: 'Jane', email: 'jane@example.com', role: 'user', dateAdded: '2022-01-01', lastActive: '2022-01-10' },
 	{ name: 'Jack', email: 'jack@example.com', role: 'user', dateAdded: '2022-01-01', lastActive: '2022-01-10' },
 ];
-export default function UsersPage() {
+async function getUsers() {
+	const res = await fetch(`${process.env.NEXTAUTH_URL}/api/user/getAll`, {
+		cache: 'no-store',
+		method: 'GET',
+	});
+	if (!res.ok) throw new Error('Failed to fetch users');
+	const data = await res.json();
+	return data;
+}
+type User = {
+	name?: string;
+	email: string;
+	id: string;
+	createdAt: string;
+	updatedAt: string;
+};
+export default async function UsersPage() {
+	const usersData: User[] = await getUsers();
 	return (
 		<div className="flex flex-col px-10">
 			<div className="flex items-center justify-between py-7 ">
@@ -59,7 +76,7 @@ export default function UsersPage() {
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-gray-200">
-								{users.map((user) => (
+								{usersData.map((user) => (
 									<tr key={user.email}>
 										<td className="p-4 ">
 											<div className="flex items-center">
@@ -80,10 +97,10 @@ export default function UsersPage() {
 											</div>
 										</td>
 										<td className="text-right py-3">
-											<span>{user.dateAdded}</span>
+											<span>{user.createdAt}</span>
 										</td>
 										<td className="text-right py-3">
-											<span>{user.lastActive}</span>
+											<span>{user.updatedAt}</span>
 										</td>
 										<td className="py-3">
 											<div className="flex items-center justify-center gap-4">
