@@ -1,15 +1,15 @@
 import CustomIcon from '@/components/Icon';
-import { getCurrentUser } from '@/lib/session';
+import { getToken } from '@/lib/session';
 import UsersTable from './UsersTable';
 
 async function getData() {
-	const session = await getCurrentUser();
+	const token = await getToken();
 	const response = await fetch(`${process.env.SERVER_BASE_URL}/users/me`, {
 		cache: 'no-store',
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
-			Authorization: `Bearer ${session?.access_token}`,
+			Authorization: `Bearer ${token}`,
 		},
 	});
 	const data = await response.json();

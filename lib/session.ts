@@ -10,5 +10,22 @@ export async function getSession() {
 
 export async function getCurrentUser() {
 	const session = await getSession();
-	return session;
+	const response = await fetch(`${process.env.SERVER_BASE_URL}/users/me`, {
+		cache: 'no-store',
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${session?.access_token}`,
+		},
+	});
+	if (response.ok) {
+		const data = await response.json();
+		return data;
+	}
+	return null;
+}
+
+export async function getToken() {
+	const session = await getSession();
+	return session?.access_token;
 }
