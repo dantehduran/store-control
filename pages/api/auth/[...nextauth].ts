@@ -1,9 +1,8 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import prisma from '@/lib/prismadb';
+import { signIn } from 'next-auth/react';
+
 export const authOptions: NextAuthOptions = {
-	adapter: PrismaAdapter(prisma),
 	providers: [
 		CredentialsProvider({
 			name: 'Credentials',
@@ -13,7 +12,7 @@ export const authOptions: NextAuthOptions = {
 			},
 			async authorize(credentials, req) {
 				const { email, password } = credentials as { email: string; password: string };
-				const res = await fetch(`${process.env.NEXTAUTH_URL}/api/user/check-credentials`, {
+				const res = await fetch(`${process.env.SERVER_BASE_URL}/auth/signin`, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -25,6 +24,7 @@ export const authOptions: NextAuthOptions = {
 				});
 				const user = await res.json();
 				if (res.ok && user) {
+					console.log(user);
 					return user;
 				} else {
 					return null;
@@ -36,20 +36,23 @@ export const authOptions: NextAuthOptions = {
 		strategy: 'jwt',
 	},
 	callbacks: {
-		jwt: async ({ token, user }) => {
-			return { ...token, ...user };
+		async jwt({ token, user }) {
+			if (user) {
+				token.access_token = user.access_token;
+			}
+			return token;
 		},
-		async session({ session, token, user }) {
+		async session({ session, token }) {
 			// Send properties to the client, like an access_token from a provider.
-			session.user = token;
-
+			if (token) {
+				session.access_token = token.access_token;
+			}
 			return session;
 		},
 	},
 	pages: {
 		signIn: '/login',
 	},
-	secret: process.env.SECRET,
 };
 
 export default NextAuth(authOptions);

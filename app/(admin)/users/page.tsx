@@ -1,27 +1,24 @@
 import CustomIcon from '@/components/Icon';
-const users = [
-	{ name: 'John', email: 'john@example.com', role: 'admin', dateAdded: '2022-01-01', lastActive: '2022-01-10' },
-	{ name: 'Jane', email: 'jane@example.com', role: 'user', dateAdded: '2022-01-01', lastActive: '2022-01-10' },
-	{ name: 'Jack', email: 'jack@example.com', role: 'user', dateAdded: '2022-01-01', lastActive: '2022-01-10' },
-];
-async function getUsers() {
-	const res = await fetch(`${process.env.NEXTAUTH_URL}/api/user/getAll`, {
+import { getCurrentUser } from '@/lib/session';
+import UsersTable from './UsersTable';
+
+async function getData() {
+	const session = await getCurrentUser();
+	const response = await fetch(`${process.env.SERVER_BASE_URL}/users/me`, {
 		cache: 'no-store',
 		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${session?.access_token}`,
+		},
 	});
-	if (!res.ok) throw new Error('Failed to fetch users');
-	const data = await res.json();
+	const data = await response.json();
 	return data;
 }
-type User = {
-	name?: string;
-	email: string;
-	id: string;
-	createdAt: string;
-	updatedAt: string;
-};
+
 export default async function UsersPage() {
-	const usersData: User[] = await getUsers();
+	const me = await getData();
+	const medata = JSON.stringify(me);
 	return (
 		<div className="flex flex-col px-10">
 			<div className="flex items-center justify-between py-7 ">
@@ -35,172 +32,19 @@ export default async function UsersPage() {
 				</button>
 			</div>
 			<hr className="py-2" />
+			{medata}
+
 			<div className="md:grid md:grid-cols-3 md:gap-6 ">
 				<div className="md:col-span-1">
 					<div className="px-4 sm:px-0">
-						<h3 className="text-lg font-medium leading-6 text-gray-900">Admin users</h3>
+						<h3 className="text-lg font-medium leading-6 text-gray-900">Account users</h3>
 						<p className="mt-1 text-sm text-gray-600">
 							Admins can add and remove users, and manage organization-level settings.
 						</p>
 					</div>
 				</div>
 				<div className="md:col-span-2">
-					<div className="relative overflow-x-auto">
-						<table className="w-full text-sm text-left text-gray-500">
-							<thead className="text-sm text-gray-400  bg-gray-50 border-b-2">
-								<tr>
-									<th scope="col" className="p-4">
-										<div className="flex items-center">
-											<input
-												id="checkbox-all-search"
-												type="checkbox"
-												className="w-4 h-4 text-rose-500 bg-gray-100 border-gray-300 rounded focus:ring-rose-400 focus:ring-2"
-											/>
-											<label htmlFor="checkbox-all-search" className="sr-only">
-												checkbox
-											</label>
-										</div>
-									</th>
-									<th scope="col" className=" py-3 text-left">
-										Name
-									</th>
-									<th scope="col" className="py-3 text-right">
-										Date added
-									</th>
-									<th scope="col" className="py-3 text-right">
-										Last active
-									</th>
-									<th scope="col" className="px-6 py-3 text-center">
-										Action
-									</th>
-								</tr>
-							</thead>
-							<tbody className="divide-y divide-gray-200">
-								{usersData.map((user) => (
-									<tr key={user.email}>
-										<td className="p-4 ">
-											<div className="flex items-center">
-												<input
-													id="checkbox-all-search"
-													type="checkbox"
-													className="w-4 h-4 text-rose-500 bg-gray-100 border-gray-300 rounded focus:ring-rose-400 focus:ring-2"
-												/>
-												<label htmlFor="checkbox-all-search" className="sr-only">
-													checkbox
-												</label>
-											</div>
-										</td>
-										<td className="py-3 ">
-											<div className="flex flex-col gap-1">
-												<span className="text-base font-medium text-gray-700">{user.name}</span>
-												<span>{user.email}</span>
-											</div>
-										</td>
-										<td className="text-right py-3">
-											<span>{user.createdAt}</span>
-										</td>
-										<td className="text-right py-3">
-											<span>{user.updatedAt}</span>
-										</td>
-										<td className="py-3">
-											<div className="flex items-center justify-center gap-4">
-												<button>
-													<CustomIcon icon="carbon:trash-can" className="w-5 h-5 text-gray-500" />
-												</button>
-												<button>
-													<CustomIcon icon="carbon:edit" className="w-5 h-5 text-gray-500" />
-												</button>
-											</div>
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-			<br />
-			<hr className="py-4 " />
-			<div className="md:grid md:grid-cols-3 md:gap-6 pb-10">
-				<div className="md:col-span-1">
-					<div className="px-4 sm:px-0">
-						<h3 className="text-lg font-medium leading-6 text-gray-900">Account users</h3>
-						<p className="mt-1 text-sm text-gray-600">Account users can add and edit items.</p>
-					</div>
-				</div>
-				<div className="md:col-span-2">
-					<div className="relative overflow-x-auto">
-						<table className="w-full text-sm text-left text-gray-500">
-							<thead className="text-sm text-gray-400  bg-gray-50 border-b-2">
-								<tr>
-									<th scope="col" className="p-4">
-										<div className="flex items-center">
-											<input
-												id="checkbox-all-search"
-												type="checkbox"
-												className="w-4 h-4 text-rose-500 bg-gray-100 border-gray-300 rounded focus:ring-rose-400 focus:ring-2"
-											/>
-											<label htmlFor="checkbox-all-search" className="sr-only">
-												checkbox
-											</label>
-										</div>
-									</th>
-									<th scope="col" className=" py-3 text-left">
-										Name
-									</th>
-									<th scope="col" className="py-3 text-right">
-										Date added
-									</th>
-									<th scope="col" className="py-3 text-right">
-										Last active
-									</th>
-									<th scope="col" className="px-6 py-3 text-center">
-										Action
-									</th>
-								</tr>
-							</thead>
-							<tbody className="divide-y divide-gray-200">
-								{users.map((user) => (
-									<tr key={user.email}>
-										<td className="p-4 ">
-											<div className="flex items-center">
-												<input
-													id="checkbox-all-search"
-													type="checkbox"
-													className="w-4 h-4 text-rose-500 bg-gray-100 border-gray-300 rounded focus:ring-rose-400 focus:ring-2"
-												/>
-												<label htmlFor="checkbox-all-search" className="sr-only">
-													checkbox
-												</label>
-											</div>
-										</td>
-										<td className="py-3 ">
-											<div className="flex flex-col gap-1">
-												<span className="text-base font-medium text-gray-700">{user.name}</span>
-												<span>{user.email}</span>
-											</div>
-										</td>
-										<td className="text-right py-3">
-											<span>{user.dateAdded}</span>
-										</td>
-										<td className="text-right py-3">
-											<span>{user.lastActive}</span>
-										</td>
-										<td className="py-3">
-											<div className="flex items-center justify-center gap-4">
-												<button>
-													<CustomIcon icon="carbon:trash-can" className="w-5 h-5 text-gray-500" />
-												</button>
-												<button>
-													<CustomIcon icon="carbon:edit" className="w-5 h-5 text-gray-500" />
-												</button>
-											</div>
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
+					<UsersTable />
 				</div>
 			</div>
 		</div>
