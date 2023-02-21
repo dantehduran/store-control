@@ -2,6 +2,7 @@
 import CustomIcon from '@/components/Icon';
 import { getSession } from 'next-auth/react';
 import { useState } from 'react';
+import { mutate } from 'swr';
 
 export default function AddProduct({ closeAddProduct }: { closeAddProduct: () => void }) {
 	const [formData, setFormData] = useState({
@@ -24,7 +25,10 @@ export default function AddProduct({ closeAddProduct }: { closeAddProduct: () =>
 			body: JSON.stringify(formData),
 		});
 		const data = await response.json();
-		if (response.ok) closeAddProduct();
+		if (response.ok) {
+			mutate(`${process.env.NEXT_PUBLIC_API}/products`);
+			closeAddProduct();
+		}
 		setErrors(data.message);
 	};
 	return (

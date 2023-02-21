@@ -24,7 +24,6 @@ export const authOptions: NextAuthOptions = {
 				});
 				const user = await res.json();
 				if (res.ok && user) {
-					console.log(user);
 					return user;
 				} else {
 					return null;

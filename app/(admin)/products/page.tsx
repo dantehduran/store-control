@@ -2,6 +2,7 @@
 import CustomIcon from '@/components/Icon';
 import { useState } from 'react';
 import AddProduct from './AddProduct';
+import ProductsTable from './ProductsTable';
 
 export default function ProductsPage() {
 	const [addActive, setAddActive] = useState(false);
@@ -13,7 +14,7 @@ export default function ProductsPage() {
 					<p className="text-sm font-medium text-gray-500">Create your product and upload here</p>
 				</div>
 				<button
-					onClick={() => setAddActive(true)}
+					onClick={() => setAddActive((prev) => !prev)}
 					className="inline-flex gap-x-2 items-center py-2.5 px-6 text-white bg-teal-600 rounded-xl hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1"
 				>
 					<CustomIcon icon="carbon:add" className="w-6 h-6 fill-current" />
@@ -22,6 +23,7 @@ export default function ProductsPage() {
 			</div>
 			<hr className="py-2" />
 			{addActive && <AddProduct closeAddProduct={() => setAddActive(false)} />}
+			<ProductsTable />
 		</div>
 	);
 }
