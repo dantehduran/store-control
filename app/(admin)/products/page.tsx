@@ -3,9 +3,53 @@ import CustomIcon from '@/components/Icon';
 import { useState } from 'react';
 import AddProduct from './AddProduct';
 import ProductsTable from './ProductsTable';
+import { getSession } from 'next-auth/react';
+import useSWR from 'swr';
+import EditProduct from './EditProduct';
+interface Product {
+	id: number;
+	name: string;
+	price: string;
+	description: string;
+	stock: number;
+}
 
+const columns = ['Name', 'Description', 'Price', 'Stock'];
+
+const getProducts = async () => {
+	const token = await getSession();
+	const response = await fetch(`${process.env.NEXT_PUBLIC_API}/products`, {
+		cache: 'no-store',
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token?.access_token}`,
+		},
+	});
+	const data = await response.json();
+	return data;
+};
 export default function ProductsPage() {
 	const [addActive, setAddActive] = useState(false);
+	const [editActive, setEditActive] = useState(false);
+	const [product, setProduct] = useState<Product | null>(null);
+	const handleDelete = async (id: number) => {
+		const token = await getSession();
+		await fetch(`${process.env.NEXT_PUBLIC_API}/products/${id}`, {
+			cache: 'no-store',
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token?.access_token}`,
+			},
+		});
+		mutate();
+	};
+	const handleEdit = async (product: Product) => {
+		setEditActive(true);
+		setProduct(product);
+	};
+	const { data, isLoading, error, mutate } = useSWR<Product[]>(`${process.env.NEXT_PUBLIC_API}/products`, getProducts);
 	return (
 		<div className="flex flex-col px-10">
 			<div className="flex items-center justify-between py-7">
@@ -23,7 +67,12 @@ export default function ProductsPage() {
 			</div>
 			<hr className="py-2" />
 			{addActive && <AddProduct closeAddProduct={() => setAddActive(false)} />}
-			<ProductsTable />
+			{editActive && product != null && <EditProduct closeEditProduct={() => setEditActive(false)} product={product} />}
+			{isLoading && <span>loading</span>}
+			{error && data === undefined && <span>{error}</span>}
+			{data !== undefined && (
+				<ProductsTable data={data} columns={columns} handleDelete={handleDelete} handleEdit={handleEdit} />
+			)}
 		</div>
 	);
 }
