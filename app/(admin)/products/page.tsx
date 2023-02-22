@@ -2,10 +2,10 @@
 import CustomIcon from '@/components/Icon';
 import { useState } from 'react';
 import AddProduct from './AddProduct';
-import ProductsTable from './ProductsTable';
 import { getSession } from 'next-auth/react';
 import useSWR from 'swr';
 import EditProduct from './EditProduct';
+import Table from '@/components/Table';
 interface Product {
 	id: number;
 	name: string;
@@ -14,7 +14,24 @@ interface Product {
 	stock: number;
 }
 
-const columns = ['Name', 'Description', 'Price', 'Stock'];
+const columns = [
+	{
+		name: 'Name',
+		key: 'name',
+	},
+	{
+		name: 'Price',
+		key: 'price',
+	},
+	{
+		name: 'Description',
+		key: 'description',
+	},
+	{
+		name: 'Stock',
+		key: 'stock',
+	},
+];
 
 const getProducts = async () => {
 	const token = await getSession();
@@ -70,8 +87,8 @@ export default function ProductsPage() {
 			{editActive && product != null && <EditProduct closeEditProduct={() => setEditActive(false)} product={product} />}
 			{isLoading && <span>loading</span>}
 			{error && data === undefined && <span>{error}</span>}
-			{data !== undefined && (
-				<ProductsTable data={data} columns={columns} handleDelete={handleDelete} handleEdit={handleEdit} />
+			{!error && !isLoading && (
+				<Table data={data || []} columns={columns} handleDelete={handleDelete} handleEdit={handleEdit} />
 			)}
 		</div>
 	);

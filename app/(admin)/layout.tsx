@@ -8,7 +8,7 @@ const sidebarLinks = [
 	{ name: 'Overview', icon: 'carbon:overlay', route: '/' },
 	{ name: 'Products', icon: 'carbon:product', route: '/products' },
 	{ name: 'Analytics', icon: 'carbon:analytics', route: '/' },
-	{ name: 'Schedule', icon: 'carbon:calendar-heat-map', route: '/' },
+	{ name: 'Categories', icon: 'carbon:categories', route: '/categories' },
 	{ name: 'Users', icon: 'carbon:user-multiple', route: '/users' },
 	{ name: 'Settings', icon: 'carbon:settings', route: '/' },
 ];
