@@ -1,6 +1,6 @@
 'use client';
 import CustomIcon from '@/components/Icon';
-import { getSession } from 'next-auth/react';
+import fetcher from '@/lib/fetcher';
 import { useState } from 'react';
 import { mutate } from 'swr';
 
@@ -14,14 +14,9 @@ export default function AddProduct({ closeAddProduct }: { closeAddProduct: () =>
 	const [errors, setErrors] = useState<string[] | null>(null);
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
-		const token = await getSession();
-		const response = await fetch(`${process.env.NEXT_PUBLIC_API}/products`, {
-			cache: 'no-store',
+		const response = await fetcher({
+			url: `${process.env.NEXT_PUBLIC_API}/products`,
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token?.access_token}`,
-			},
 			body: JSON.stringify(formData),
 		});
 		const data = await response.json();

@@ -2,10 +2,12 @@
 import CustomIcon from '@/components/Icon';
 import { useState } from 'react';
 import AddProduct from './AddProduct';
-import { getSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import useSWR from 'swr';
 import EditProduct from './EditProduct';
 import Table from '@/components/Table';
+import fetcher from '@/lib/fetcher';
+
 interface Product {
 	id: number;
 	name: string;
@@ -34,16 +36,13 @@ const columns = [
 ];
 
 const getProducts = async () => {
-	const token = await getSession();
-	const response = await fetch(`${process.env.NEXT_PUBLIC_API}/products`, {
-		cache: 'no-store',
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token?.access_token}`,
-		},
-	});
+	const response = await fetcher({ url: `${process.env.NEXT_PUBLIC_API}/products`, method: 'GET' });
 	const data = await response.json();
+	if (!response.ok) {
+		const error = new Error(data.message);
+		signOut();
+		throw error;
+	}
 	return data;
 };
 export default function ProductsPage() {
@@ -51,22 +50,15 @@ export default function ProductsPage() {
 	const [editActive, setEditActive] = useState(false);
 	const [product, setProduct] = useState<Product | null>(null);
 	const handleDelete = async (id: number) => {
-		const token = await getSession();
-		await fetch(`${process.env.NEXT_PUBLIC_API}/products/${id}`, {
-			cache: 'no-store',
-			method: 'DELETE',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token?.access_token}`,
-			},
-		});
+		await fetcher({ url: `${process.env.NEXT_PUBLIC_API}/products/${id}`, method: 'DELETE' });
 		mutate();
 	};
 	const handleEdit = async (product: Product) => {
 		setEditActive(true);
 		setProduct(product);
 	};
-	const { data, isLoading, error, mutate } = useSWR<Product[]>(`${process.env.NEXT_PUBLIC_API}/products`, getProducts);
+	const { data, isLoading, error, mutate } = useSWR(`${process.env.NEXT_PUBLIC_API}/products`, getProducts);
+
 	return (
 		<div className="flex flex-col px-10">
 			<div className="flex items-center justify-between py-7">
@@ -87,9 +79,7 @@ export default function ProductsPage() {
 			{editActive && product != null && <EditProduct closeEditProduct={() => setEditActive(false)} product={product} />}
 			{isLoading && <span>loading</span>}
 			{error && data === undefined && <span>{error}</span>}
-			{!error && !isLoading && (
-				<Table data={data || []} columns={columns} handleDelete={handleDelete} handleEdit={handleEdit} />
-			)}
+			{data && <Table data={data || []} columns={columns} handleDelete={handleDelete} handleEdit={handleEdit} />}
 		</div>
 	);
 }
