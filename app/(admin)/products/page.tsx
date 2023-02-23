@@ -14,6 +14,7 @@ interface Product {
 	price: string;
 	description: string;
 	stock: number;
+	categories: { id: number; name: string }[];
 }
 
 const columns = [
@@ -32,6 +33,10 @@ const columns = [
 	{
 		name: 'Stock',
 		key: 'stock',
+	},
+	{
+		name: 'Categories',
+		key: 'categories',
 	},
 ];
 

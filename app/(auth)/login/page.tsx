@@ -40,19 +40,16 @@ export default function Login() {
 								<label htmlFor="email" className="font-light text-gray-500">
 									Email
 								</label>
-								<div className="flex overflow-hidden items-center mt-2 w-full rounded-lg border border-gray-400 transition-all focus-within:shadow-lg focus-within:border-rose-400">
-									<div className="flex justify-center items-center pl-6 ">
-										<Icon
-											icon="carbon:user"
-											className="w-6 h-6 pointer-events-none flex justify-center items-center text-gray-500"
-										/>
+								<div className="relative overflow-hidden items-center mt-2 w-full rounded-lg border border-gray-400 transition-all focus-within:shadow-lg focus-within:border-rose-400">
+									<div className="absolute inset-y-0 left-0 pl-6 pointer-events-none flex justify-center items-center">
+										<Icon icon="carbon:user" className="w-6 h-6  text-gray-500" />
 									</div>
 									<input
 										type="email"
 										name="email"
 										id="email"
 										placeholder="Enter your email"
-										className="p-4 w-full focus:outline-none font-light border-0 focus:ring-0"
+										className="p-4 pl-16 w-full focus:outline-none font-light border-0 focus:ring-0"
 										onChange={(e) => (email.current = e.target.value)}
 									/>
 								</div>
@@ -61,19 +58,16 @@ export default function Login() {
 								<label htmlFor="password" className="font-light text-gray-500">
 									Password
 								</label>
-								<div className="flex overflow-hidden items-center mt-2 w-full rounded-lg border border-gray-400 transition-all focus-within:shadow-lg focus-within:border-rose-400">
-									<div className="flex justify-center items-center pl-6">
-										<Icon
-											className="w-6 h-6 pointer-events-none flex justify-center items-center text-gray-500"
-											icon="carbon:locked"
-										/>
+								<div className="relative overflow-hidden items-center mt-2 w-full rounded-lg border border-gray-400 transition-all focus-within:shadow-lg focus-within:border-rose-400">
+									<div className="absolute inset-y-0 left-0 pl-6 pointer-events-none flex justify-center items-center">
+										<Icon className="w-6 h-6 text-gray-500" icon="carbon:locked" />
 									</div>
 									<input
 										type="password"
 										name="password"
 										id="password"
 										placeholder="Enter your password"
-										className="p-4 w-full focus:outline-none font-light border-0 focus:ring-0"
+										className="p-4 pl-16 w-full focus:outline-none font-light border-0 focus:ring-0"
 										onChange={(e) => (password.current = e.target.value)}
 									/>
 								</div>

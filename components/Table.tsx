@@ -31,7 +31,11 @@ export default function Table({ data, columns, handleDelete, handleEdit }: Props
 								.filter((a) => columns.some((c) => c.key === a))
 								.map((key) => (
 									<td className="text-left p-3" key={key}>
-										<span>{item[key as keyof typeof item]}</span>
+										<div>
+											{Array.isArray(item[key])
+												? item[key].map((v: any) => v.name).join(', ')
+												: item[key as keyof typeof item]}
+										</div>
 									</td>
 								))}
 

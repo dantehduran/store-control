@@ -1,11 +1,13 @@
 'use client';
 import CustomIcon from '@/components/Icon';
 import { useState } from 'react';
-// import AddCategory from './AddCategory';
-import { getSession, signOut } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import useSWR from 'swr';
-// import EditCategory from './EditCategory';
+import EditCategory from './EditCategory';
+import AddCategory from './AddCategory';
+
 import Table from '@/components/Table';
+import fetcher from '@/lib/fetcher';
 interface Category {
 	id: number;
 	name: string;
@@ -16,22 +18,10 @@ const columns = [
 		name: 'Name',
 		key: 'name',
 	},
-	{
-		name: 'Created At',
-		key: 'createdAt',
-	},
 ];
 
 const getCategories = async () => {
-	const token = await getSession();
-	const response = await fetch(`${process.env.NEXT_PUBLIC_API}/categories`, {
-		cache: 'no-store',
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token?.access_token}`,
-		},
-	});
+	const response = await fetcher({ url: `${process.env.NEXT_PUBLIC_API}/categories`, method: 'GET' });
 	const data = await response.json();
 	if (!response.ok) {
 		const error = new Error(data.message);
@@ -43,17 +33,9 @@ const getCategories = async () => {
 export default function CategoryPage() {
 	const [addActive, setAddActive] = useState(false);
 	const [editActive, setEditActive] = useState(false);
-	const [caetegory, setCategory] = useState<Category | null>(null);
+	const [category, setCategory] = useState<Category | null>(null);
 	const handleDelete = async (id: number) => {
-		const token = await getSession();
-		await fetch(`${process.env.NEXT_PUBLIC_API}/categories/${id}`, {
-			cache: 'no-store',
-			method: 'DELETE',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token?.access_token}`,
-			},
-		});
+		await fetcher({ url: `${process.env.NEXT_PUBLIC_API}/categories/${id}`, method: 'DELETE' });
 		mutate();
 	};
 	const handleEdit = async (category: Category) => {
@@ -81,8 +63,10 @@ export default function CategoryPage() {
 				</button>
 			</div>
 			<hr className="py-2" />
-			{/* {addActive && <AddCategory closeAddCategory={() => setAddActive(false)} />} */}
-			{/* {editActive && category != null && <EditCategory closeEditCategory={() => setEditActive(false)} category={category} />} */}
+			{addActive && <AddCategory closeAddCategory={() => setAddActive(false)} />}
+			{editActive && category != null && (
+				<EditCategory closeEditCategory={() => setEditActive(false)} category={category} />
+			)}
 			{isLoading && <span>loading</span>}
 			{error && data === undefined && <span>{error}</span>}
 			{!error && !isLoading && (
