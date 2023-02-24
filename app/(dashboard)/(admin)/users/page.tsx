@@ -1,52 +1,82 @@
+'use client';
 import CustomIcon from '@/components/Icon';
-import { getToken } from '@/lib/session';
-import UsersTable from './UsersTable';
+import { useState } from 'react';
+import { signOut } from 'next-auth/react';
+import useSWR from 'swr';
+import Table from '@/components/Table';
+import fetcher from '@/lib/fetcher';
+import AddUser from './AddUser';
+import EditUser from './EditUser';
 
-async function getData() {
-	const token = await getToken();
-	const response = await fetch(`${process.env.SERVER_BASE_URL}/users/me`, {
-		cache: 'no-store',
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token}`,
-		},
-	});
-	const data = await response.json();
-	return data;
+interface User {
+	id: number;
+	username: string;
+	fullName: string;
+	createdAt: string;
 }
 
-export default async function UsersPage() {
-	const me = await getData();
-	const medata = JSON.stringify(me);
+const columns = [
+	{
+		name: 'Username',
+		key: 'username',
+	},
+	{
+		name: 'Full Name',
+		key: 'fullName',
+	},
+	{
+		name: 'Created At',
+		key: 'createdAt',
+	},
+];
+const getUsers = async () => {
+	const response = await fetcher({ url: `${process.env.NEXT_PUBLIC_API}/users`, method: 'GET' });
+	const data = await response.json();
+	if (!response.ok) {
+		const error = new Error(data.message);
+		signOut();
+		throw error;
+	}
+	return data;
+};
+
+export default function UsersPage() {
+	const [addActive, setAddActive] = useState(false);
+	const [editActive, setEditActive] = useState(false);
+	const [user, setUser] = useState<User | null>(null);
+	const handleDelete = async (id: number) => {
+		await fetcher({ url: `${process.env.NEXT_PUBLIC_API}/users/${id}`, method: 'DELETE' });
+		mutate();
+	};
+	const handleEdit = async (user: User) => {
+		setEditActive(true);
+		setUser(user);
+	};
+	const { data, isLoading, error, mutate } = useSWR<User[]>(`${process.env.NEXT_PUBLIC_API}/users`, getUsers);
 	return (
 		<div className="flex flex-col px-10">
-			<div className="flex items-center justify-between py-7 ">
+			<div className="flex items-center justify-between py-7">
 				<div>
 					<h1 className="text-2xl font-semibold leading-relaxed text-gray-800">Users</h1>
-					<p className="text-sm font-medium text-gray-500">Manage your users and their account permissions here.</p>
+					<p className="text-sm font-medium text-gray-500">Create your users here</p>
 				</div>
-				<button className="inline-flex gap-x-2 items-center py-2.5 px-6 text-white bg-teal-600 rounded-xl hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1">
+				<button
+					onClick={() => setAddActive((prev) => !prev)}
+					className="inline-flex gap-x-2 items-center py-2.5 px-6 text-white bg-teal-600 rounded-xl hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-1"
+				>
 					<CustomIcon icon="carbon:add" className="w-6 h-6 fill-current" />
-					<span className="text-sm font-semibold tracking-wide">Create User</span>
+					<span className="text-sm font-semibold tracking-wide">Create Item</span>
 				</button>
 			</div>
 			<hr className="py-2" />
-			{medata}
+			{addActive && <AddUser closeAddUser={() => setAddActive(false)} />}
 
-			<div className="md:grid md:grid-cols-3 md:gap-6 ">
-				<div className="md:col-span-1">
-					<div className="px-4 sm:px-0">
-						<h3 className="text-lg font-medium leading-6 text-gray-900">Account users</h3>
-						<p className="mt-1 text-sm text-gray-600">
-							Admins can add and remove users, and manage organization-level settings.
-						</p>
-					</div>
-				</div>
-				<div className="md:col-span-2">
-					<UsersTable />
-				</div>
-			</div>
+			{editActive && user != null && <EditUser closeEditUser={() => setEditActive(false)} user={user} />}
+			{isLoading && <span>loading</span>}
+			{error && data === undefined && <span>{error}</span>}
+			{!error && !isLoading && (
+				<Table data={data || []} columns={columns} handleDelete={handleDelete} handleEdit={handleEdit} />
+			)}
 		</div>
 	);
 }
