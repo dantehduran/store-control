@@ -1,20 +1,21 @@
 'use client';
 import Icon from '@/components/Icon';
 import { signIn } from 'next-auth/react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 export default function Login() {
-	// const user = await getCurrentUser();
-	// console.log(user);
-	const email = useRef('');
+	const username = useRef('');
 	const password = useRef('');
+	const [error, setError] = useState(false);
 	const onSubmit = async (e: any) => {
 		e.preventDefault();
-		await signIn('credentials', {
-			email: email.current,
+		const response = await signIn('credentials', {
+			username: username.current,
 			password: password.current,
-			redirect: true,
-			callbackUrl: '/',
+			redirect: false,
+			// callbackUrl: '/',
 		});
+		if (response?.ok) window.location.href = '/';
+		if (response?.error) setError(true);
 	};
 	return (
 		<div className="flex justify-between min-h-screen font-sans">
@@ -37,20 +38,20 @@ export default function Login() {
 						<span className="font-light text-gray-500">Login now to manage your job made easy.</span>
 						<form onSubmit={onSubmit}>
 							<div className="pt-6">
-								<label htmlFor="email" className="font-light text-gray-500">
-									Email
+								<label htmlFor="username" className="font-light text-gray-500">
+									Username
 								</label>
 								<div className="relative overflow-hidden items-center mt-2 w-full rounded-lg border border-gray-400 transition-all focus-within:shadow-lg focus-within:border-rose-400">
 									<div className="absolute inset-y-0 left-0 pl-6 pointer-events-none flex justify-center items-center">
 										<Icon icon="carbon:user" className="w-6 h-6  text-gray-500" />
 									</div>
 									<input
-										type="email"
-										name="email"
-										id="email"
-										placeholder="Enter your email"
+										type="text"
+										name="username"
+										id="username"
+										placeholder="Enter your username"
 										className="p-4 pl-16 w-full focus:outline-none font-light border-0 focus:ring-0"
-										onChange={(e) => (email.current = e.target.value)}
+										onChange={(e) => (username.current = e.target.value)}
 									/>
 								</div>
 							</div>
@@ -72,23 +73,11 @@ export default function Login() {
 									/>
 								</div>
 							</div>
-							<div className="flex justify-between items-center pt-4">
-								<div className="flex items-center">
-									<input
-										type="checkbox"
-										name="remember"
-										id="remember"
-										className="w-5 h-5 text-rose-400 bg-white rounded border border-gray-400 focus:outline-none focus:ring-rose-400"
-									/>
-									<label htmlFor="remember" className="pl-4 font-light text-gray-900">
-										Remember me
-									</label>
+							{error && (
+								<div className="pt-4">
+									<span className="text-rose-500">Invalid username or password</span>
 								</div>
-								<a href="#" className="text-teal-500 hover:text-teal-600">
-									{' '}
-									Forgot password
-								</a>
-							</div>
+							)}
 							<div className="pt-8 w-full">
 								<button
 									type="submit"
