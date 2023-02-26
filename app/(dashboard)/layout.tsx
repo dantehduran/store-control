@@ -6,7 +6,7 @@ import LogoutButton from './LogoutButton';
 import { signOut } from 'next-auth/react';
 
 const sidebarLinks = [
-	{ name: 'Overview', icon: 'carbon:overlay', route: '/' },
+	{ name: 'Transactions', icon: 'carbon:overlay', route: '/' },
 	{ name: 'Products', icon: 'carbon:product', route: '/products' },
 	{ name: 'Analytics', icon: 'carbon:analytics', route: '/' },
 ];

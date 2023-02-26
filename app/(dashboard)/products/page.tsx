@@ -7,15 +7,7 @@ import useSWR from 'swr';
 import EditProduct from './EditProduct';
 import Table from '@/components/Table';
 import fetcher from '@/lib/fetcher';
-
-interface Product {
-	id: number;
-	name: string;
-	price: string;
-	description: string;
-	stock: number;
-	categories: { id: number; name: string }[];
-}
+import { Category, Product } from '@/types';
 
 const columns = [
 	{
@@ -37,6 +29,7 @@ const columns = [
 	{
 		name: 'Categories',
 		key: 'categories',
+		accessor: (values: Category[]) => values.map((v) => v.name).join(', '),
 	},
 ];
 

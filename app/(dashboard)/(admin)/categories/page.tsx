@@ -5,13 +5,9 @@ import { signOut } from 'next-auth/react';
 import useSWR from 'swr';
 import EditCategory from './EditCategory';
 import AddCategory from './AddCategory';
-
 import Table from '@/components/Table';
 import fetcher from '@/lib/fetcher';
-interface Category {
-	id: number;
-	name: string;
-}
+import { Category } from '@/types';
 
 const columns = [
 	{

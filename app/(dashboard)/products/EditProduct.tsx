@@ -5,19 +5,7 @@ import { getSession, signOut } from 'next-auth/react';
 import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import fetcher from '@/lib/fetcher';
-
-interface Product {
-	id: number;
-	name: string;
-	price: string;
-	description: string;
-	stock: number;
-	categories: Category[];
-}
-interface Category {
-	id: number;
-	name: string;
-}
+import { Category, Product } from '@/types';
 
 const getCategories = async () => {
 	const response = await fetcher({ url: `${process.env.NEXT_PUBLIC_API}/categories`, method: 'GET' });

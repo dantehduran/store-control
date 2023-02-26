@@ -2,14 +2,10 @@
 import Autocomplete from '@/components/Autocomplete';
 import CustomIcon from '@/components/Icon';
 import fetcher from '@/lib/fetcher';
+import { Category } from '@/types';
 import { signOut } from 'next-auth/react';
 import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
-
-interface Category {
-	id: number;
-	name: string;
-}
 
 const getCategories = async () => {
 	const response = await fetcher({ url: `${process.env.NEXT_PUBLIC_API}/categories`, method: 'GET' });

@@ -1,4 +1,5 @@
 'use client';
+import { format } from 'date-fns';
 import CustomIcon from '@/components/Icon';
 import { useState } from 'react';
 import { signOut } from 'next-auth/react';
@@ -7,13 +8,7 @@ import Table from '@/components/Table';
 import fetcher from '@/lib/fetcher';
 import AddUser from './AddUser';
 import EditUser from './EditUser';
-
-interface User {
-	id: number;
-	username: string;
-	fullName: string;
-	createdAt: string;
-}
+import { User } from '@/types';
 
 const columns = [
 	{
@@ -27,6 +22,7 @@ const columns = [
 	{
 		name: 'Created At',
 		key: 'createdAt',
+		accessor: (value: string) => format(new Date(value), 'dd/MM/yyyy'),
 	},
 ];
 const getUsers = async () => {

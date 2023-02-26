@@ -26,6 +26,7 @@ export default function Example({ options, handleSelect }: Props) {
 						<Combobox.Input
 							className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-400 focus:border-teal-400 block w-full p-2.5"
 							onChange={(event) => setQuery(event.target.value)}
+							displayValue={(option: any) => option?.name}
 						/>
 						<Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
 							<CustomIcon icon="carbon:chevron-down" className="h-5 w-5 text-gray-400" aria-hidden="true" />

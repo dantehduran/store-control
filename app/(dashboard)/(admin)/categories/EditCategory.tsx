@@ -1,13 +1,9 @@
 'use client';
 import CustomIcon from '@/components/Icon';
 import fetcher from '@/lib/fetcher';
+import { Category } from '@/types';
 import { useState } from 'react';
 import { mutate } from 'swr';
-
-interface Category {
-	id: number;
-	name: string;
-}
 
 export default function EditCategory({
 	closeEditCategory,

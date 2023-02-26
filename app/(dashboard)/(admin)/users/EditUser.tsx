@@ -1,14 +1,9 @@
 'use client';
 import CustomIcon from '@/components/Icon';
 import fetcher from '@/lib/fetcher';
+import { User } from '@/types';
 import { useState } from 'react';
 import { mutate } from 'swr';
-
-interface User {
-	id: number;
-	fullName: string;
-	username: string;
-}
 
 export default function EditUser({ closeEditUser, user }: { closeEditUser: () => void; user: User }) {
 	const [formData, setFormData] = useState({

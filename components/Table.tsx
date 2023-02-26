@@ -1,11 +1,17 @@
 'use client';
 import CustomIcon from '@/components/Icon';
 
+interface Column {
+	name: string;
+	key: string;
+	accessor?: (value: any) => any;
+}
+
 interface Props {
 	data: any[];
-	columns: { name: string; key: string }[];
-	handleDelete: (id: number) => void;
-	handleEdit: (item: any) => void;
+	columns: Column[];
+	handleDelete?: (id: number) => void;
+	handleEdit?: (item: any) => void;
 }
 export default function Table({ data, columns, handleDelete, handleEdit }: Props) {
 	return (
@@ -27,26 +33,26 @@ export default function Table({ data, columns, handleDelete, handleEdit }: Props
 				<tbody className="divide-y divide-gray-200">
 					{data.map((item, i) => (
 						<tr key={i}>
-							{Object.keys(item)
-								.filter((a) => columns.some((c) => c.key === a))
-								.map((key) => (
+							{columns
+								.filter((a) => columns.some((c) => c.key === a.key))
+								.map(({ key, accessor }) => (
 									<td className="text-left p-3" key={key}>
-										<div>
-											{Array.isArray(item[key])
-												? item[key].map((v: any) => v.name).join(', ')
-												: item[key as keyof typeof item]}
-										</div>
+										<div>{accessor ? accessor(item[key]) : item[key]}</div>
 									</td>
 								))}
 
 							<td className="py-3">
 								<div className="flex items-center justify-center gap-4">
-									<button onClick={() => handleDelete(item.id)}>
-										<CustomIcon icon="carbon:trash-can" className="w-5 h-5 text-gray-500" />
-									</button>
-									<button onClick={() => handleEdit(item)}>
-										<CustomIcon icon="carbon:edit" className="w-5 h-5 text-gray-500" />
-									</button>
+									{handleDelete && (
+										<button onClick={() => handleDelete(item.id)}>
+											<CustomIcon icon="carbon:trash-can" className="w-5 h-5 text-gray-500" />
+										</button>
+									)}
+									{handleEdit && (
+										<button onClick={() => handleEdit(item)}>
+											<CustomIcon icon="carbon:edit" className="w-5 h-5 text-gray-500" />
+										</button>
+									)}
 								</div>
 							</td>
 						</tr>
