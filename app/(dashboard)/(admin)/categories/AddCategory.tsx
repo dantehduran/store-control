@@ -2,9 +2,14 @@
 import CustomIcon from '@/components/Icon';
 import fetcher from '@/lib/fetcher';
 import { useState } from 'react';
-import { mutate } from 'swr';
 
-export default function AddCategory({ closeAddCategory }: { closeAddCategory: () => void }) {
+export default function AddCategory({
+	closeAddCategory,
+	mutate,
+}: {
+	closeAddCategory: () => void;
+	mutate: () => void;
+}) {
 	const [formData, setFormData] = useState({
 		name: '',
 	});
@@ -18,7 +23,7 @@ export default function AddCategory({ closeAddCategory }: { closeAddCategory: ()
 		});
 		const data = await response.json();
 		if (response.ok) {
-			mutate(`${process.env.NEXT_PUBLIC_API}/categories`);
+			mutate();
 			closeAddCategory();
 		}
 		setErrors(data.message);

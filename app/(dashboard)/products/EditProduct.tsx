@@ -3,7 +3,7 @@ import CustomIcon from '@/components/Icon';
 import Autocomplete from '@/components/Autocomplete';
 import { getSession, signOut } from 'next-auth/react';
 import { useState } from 'react';
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 import fetcher from '@/lib/fetcher';
 import { Category, Product } from '@/types';
 
@@ -18,7 +18,15 @@ const getCategories = async () => {
 	return data;
 };
 
-export default function EditProduct({ closeEditProduct, product }: { closeEditProduct: () => void; product: Product }) {
+export default function EditProduct({
+	closeEditProduct,
+	product,
+	mutate,
+}: {
+	closeEditProduct: () => void;
+	product: Product;
+	mutate: () => void;
+}) {
 	const { data } = useSWR<Category[]>(`${process.env.NEXT_PUBLIC_API}/categories`, getCategories);
 	const [categories, setCategories] = useState<Category[]>(product.categories);
 	const [formData, setFormData] = useState({
@@ -51,7 +59,7 @@ export default function EditProduct({ closeEditProduct, product }: { closeEditPr
 		});
 		const data = await response.json();
 		if (response.ok) {
-			mutate(`${process.env.NEXT_PUBLIC_API}/products`);
+			mutate();
 			closeEditProduct();
 		}
 		setErrors(data.message);

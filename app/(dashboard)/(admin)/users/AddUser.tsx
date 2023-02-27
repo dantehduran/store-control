@@ -2,9 +2,8 @@
 import CustomIcon from '@/components/Icon';
 import fetcher from '@/lib/fetcher';
 import { useState } from 'react';
-import { mutate } from 'swr';
 
-export default function AddUser({ closeAddUser }: { closeAddUser: () => void }) {
+export default function AddUser({ closeAddUser, mutate }: { closeAddUser: () => void; mutate: () => void }) {
 	const [formData, setFormData] = useState({
 		username: '',
 		fullName: '',
@@ -20,7 +19,7 @@ export default function AddUser({ closeAddUser }: { closeAddUser: () => void }) 
 		});
 		const data = await response.json();
 		if (response.ok) {
-			mutate(`${process.env.NEXT_PUBLIC_API}/users`);
+			mutate();
 			closeAddUser();
 		}
 		setErrors(data.message);

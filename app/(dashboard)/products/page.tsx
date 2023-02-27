@@ -8,6 +8,7 @@ import EditProduct from './EditProduct';
 import Table from '@/components/Table';
 import fetcher from '@/lib/fetcher';
 import { Category, Product } from '@/types';
+import Pagination from '@/components/Pagination';
 
 const columns = [
 	{
@@ -33,8 +34,8 @@ const columns = [
 	},
 ];
 
-const getProducts = async () => {
-	const response = await fetcher({ url: `${process.env.NEXT_PUBLIC_API}/products`, method: 'GET' });
+const getProducts = async (url: string) => {
+	const response = await fetcher({ url, method: 'GET' });
 	const data = await response.json();
 	if (!response.ok) {
 		const error = new Error(data.message);
@@ -43,9 +44,11 @@ const getProducts = async () => {
 	}
 	return data;
 };
+let pageSize = 10;
 export default function ProductsPage() {
 	const [addActive, setAddActive] = useState(false);
 	const [editActive, setEditActive] = useState(false);
+	const [currentPage, setCurrentPage] = useState(1);
 	const [product, setProduct] = useState<Product | null>(null);
 	const handleDelete = async (id: number) => {
 		await fetcher({ url: `${process.env.NEXT_PUBLIC_API}/products/${id}`, method: 'DELETE' });
@@ -55,8 +58,11 @@ export default function ProductsPage() {
 		setEditActive(true);
 		setProduct(product);
 	};
-	const { data, isLoading, error, mutate } = useSWR(`${process.env.NEXT_PUBLIC_API}/products`, getProducts);
-
+	const { data, isLoading, error, mutate } = useSWR<{ rows: Product[]; totalCount: number }>(
+		`${process.env.NEXT_PUBLIC_API}/products?currentPage=${currentPage}&limit=${pageSize}`,
+		getProducts
+	);
+	console.log(data);
 	return (
 		<div className="flex flex-col px-10">
 			<div className="flex items-center justify-between py-7">
@@ -73,11 +79,21 @@ export default function ProductsPage() {
 				</button>
 			</div>
 			<hr className="py-2" />
-			{addActive && <AddProduct closeAddProduct={() => setAddActive(false)} />}
-			{editActive && product != null && <EditProduct closeEditProduct={() => setEditActive(false)} product={product} />}
+			{addActive && <AddProduct closeAddProduct={() => setAddActive(false)} mutate={mutate} />}
+			{editActive && product != null && (
+				<EditProduct closeEditProduct={() => setEditActive(false)} product={product} mutate={mutate} />
+			)}
 			{isLoading && <span>loading</span>}
 			{error && data === undefined && <span>{error}</span>}
-			{data && <Table data={data || []} columns={columns} handleDelete={handleDelete} handleEdit={handleEdit} />}
+			<Table data={data?.rows || []} columns={columns} handleDelete={handleDelete} handleEdit={handleEdit} />
+			<div className="flex justify-end mt-8">
+				<Pagination
+					currentPage={currentPage}
+					totalCount={data?.totalCount || 0}
+					pageSize={pageSize}
+					onPageChange={(page) => setCurrentPage(page)}
+				/>
+			</div>
 		</div>
 	);
 }

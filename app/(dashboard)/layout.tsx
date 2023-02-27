@@ -8,12 +8,10 @@ import { signOut } from 'next-auth/react';
 const sidebarLinks = [
 	{ name: 'Transactions', icon: 'carbon:overlay', route: '/' },
 	{ name: 'Products', icon: 'carbon:product', route: '/products' },
-	{ name: 'Analytics', icon: 'carbon:analytics', route: '/' },
 ];
 const adminSidebarLinks = [
 	{ name: 'Categories', icon: 'carbon:categories', route: '/categories' },
 	{ name: 'Users', icon: 'carbon:user-multiple', route: '/users' },
-	{ name: 'Settings', icon: 'carbon:settings', route: '/' },
 ];
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
 	const user = await getCurrentUser();

@@ -5,7 +5,7 @@ import fetcher from '@/lib/fetcher';
 import { Category } from '@/types';
 import { signOut } from 'next-auth/react';
 import { useState } from 'react';
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 
 const getCategories = async () => {
 	const response = await fetcher({ url: `${process.env.NEXT_PUBLIC_API}/categories`, method: 'GET' });
@@ -18,7 +18,7 @@ const getCategories = async () => {
 	return data;
 };
 
-export default function AddProduct({ closeAddProduct }: { closeAddProduct: () => void }) {
+export default function AddProduct({ closeAddProduct, mutate }: { closeAddProduct: () => void; mutate: () => void }) {
 	const { data } = useSWR<Category[]>(`${process.env.NEXT_PUBLIC_API}/categories`, getCategories);
 	const [categories, setCategories] = useState<Category[]>([]);
 	const handleSelect = (category: Category) => {
@@ -43,7 +43,7 @@ export default function AddProduct({ closeAddProduct }: { closeAddProduct: () =>
 		});
 		const data = await response.json();
 		if (response.ok) {
-			mutate(`${process.env.NEXT_PUBLIC_API}/products`);
+			mutate();
 			closeAddProduct();
 		}
 		setErrors(data.message);

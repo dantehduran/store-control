@@ -8,6 +8,7 @@ import AddCategory from './AddCategory';
 import Table from '@/components/Table';
 import fetcher from '@/lib/fetcher';
 import { Category } from '@/types';
+import Pagination from '@/components/Pagination';
 
 const columns = [
 	{
@@ -16,8 +17,8 @@ const columns = [
 	},
 ];
 
-const getCategories = async () => {
-	const response = await fetcher({ url: `${process.env.NEXT_PUBLIC_API}/categories`, method: 'GET' });
+const getCategories = async (url: string) => {
+	const response = await fetcher({ url, method: 'GET' });
 	const data = await response.json();
 	if (!response.ok) {
 		const error = new Error(data.message);
@@ -26,9 +27,11 @@ const getCategories = async () => {
 	}
 	return data;
 };
+let pageSize = 10;
 export default function CategoryPage() {
 	const [addActive, setAddActive] = useState(false);
 	const [editActive, setEditActive] = useState(false);
+	const [currentPage, setCurrentPage] = useState(1);
 	const [category, setCategory] = useState<Category | null>(null);
 	const handleDelete = async (id: number) => {
 		await fetcher({ url: `${process.env.NEXT_PUBLIC_API}/categories/${id}`, method: 'DELETE' });
@@ -38,8 +41,8 @@ export default function CategoryPage() {
 		setEditActive(true);
 		setCategory(category);
 	};
-	const { data, isLoading, error, mutate } = useSWR<Category[]>(
-		`${process.env.NEXT_PUBLIC_API}/categories`,
+	const { data, isLoading, error, mutate } = useSWR<{ rows: Category[]; totalCount: number }>(
+		`${process.env.NEXT_PUBLIC_API}/categories?currentPage=${currentPage}&limit=${pageSize}`,
 		getCategories
 	);
 
@@ -59,15 +62,23 @@ export default function CategoryPage() {
 				</button>
 			</div>
 			<hr className="py-2" />
-			{addActive && <AddCategory closeAddCategory={() => setAddActive(false)} />}
+			{addActive && <AddCategory closeAddCategory={() => setAddActive(false)} mutate={mutate} />}
 			{editActive && category != null && (
-				<EditCategory closeEditCategory={() => setEditActive(false)} category={category} />
+				<EditCategory closeEditCategory={() => setEditActive(false)} category={category} mutate={mutate} />
 			)}
 			{isLoading && <span>loading</span>}
 			{error && data === undefined && <span>{error}</span>}
-			{!error && !isLoading && (
-				<Table data={data || []} columns={columns} handleDelete={handleDelete} handleEdit={handleEdit} />
-			)}
+
+			<Table data={data?.rows || []} columns={columns} handleDelete={handleDelete} handleEdit={handleEdit} />
+
+			<div className="flex justify-end mt-8">
+				<Pagination
+					currentPage={currentPage}
+					totalCount={data?.totalCount || 0}
+					pageSize={pageSize}
+					onPageChange={(page) => setCurrentPage(page)}
+				/>
+			</div>
 		</div>
 	);
 }

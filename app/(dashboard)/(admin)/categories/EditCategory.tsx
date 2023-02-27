@@ -3,14 +3,15 @@ import CustomIcon from '@/components/Icon';
 import fetcher from '@/lib/fetcher';
 import { Category } from '@/types';
 import { useState } from 'react';
-import { mutate } from 'swr';
 
 export default function EditCategory({
 	closeEditCategory,
 	category,
+	mutate,
 }: {
 	closeEditCategory: () => void;
 	category: Category;
+	mutate: () => void;
 }) {
 	const [formData, setFormData] = useState({
 		name: category.name,
@@ -25,7 +26,7 @@ export default function EditCategory({
 		});
 		const data = await response.json();
 		if (response.ok) {
-			mutate(`${process.env.NEXT_PUBLIC_API}/categories`);
+			mutate();
 			closeEditCategory();
 		}
 		setErrors(data.message);

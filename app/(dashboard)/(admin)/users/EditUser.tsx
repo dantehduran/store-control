@@ -3,9 +3,16 @@ import CustomIcon from '@/components/Icon';
 import fetcher from '@/lib/fetcher';
 import { User } from '@/types';
 import { useState } from 'react';
-import { mutate } from 'swr';
 
-export default function EditUser({ closeEditUser, user }: { closeEditUser: () => void; user: User }) {
+export default function EditUser({
+	closeEditUser,
+	user,
+	mutate,
+}: {
+	closeEditUser: () => void;
+	user: User;
+	mutate: () => void;
+}) {
 	const [formData, setFormData] = useState({
 		fullName: user.fullName,
 		username: user.username,
@@ -20,7 +27,7 @@ export default function EditUser({ closeEditUser, user }: { closeEditUser: () =>
 		});
 		const data = await response.json();
 		if (response.ok) {
-			mutate(`${process.env.NEXT_PUBLIC_API}/users`);
+			mutate();
 			closeEditUser();
 		}
 		setErrors(data.message);

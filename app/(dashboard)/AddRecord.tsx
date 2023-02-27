@@ -6,7 +6,7 @@ import { Product } from '@/types';
 import { Listbox, RadioGroup, Transition } from '@headlessui/react';
 import { signOut } from 'next-auth/react';
 import { Fragment, useState } from 'react';
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 
 const radioOptions = [
 	{ label: 'In', value: 'INCREMENT' },
@@ -24,7 +24,7 @@ const getProducts = async () => {
 	return data;
 };
 
-export default function AddRecord({ closeAddRecord }: { closeAddRecord: () => void }) {
+export default function AddRecord({ closeAddRecord, mutate }: { closeAddRecord: () => void; mutate: () => void }) {
 	const { data } = useSWR<Product[]>(`${process.env.NEXT_PUBLIC_API}/products`, getProducts);
 	const [product, setProduct] = useState<Product | null>((data && data[0]) || null);
 	const [type, setType] = useState<'INCREMENT' | 'DECREMENT'>('INCREMENT');
@@ -40,7 +40,7 @@ export default function AddRecord({ closeAddRecord }: { closeAddRecord: () => vo
 		});
 		const data = await response.json();
 		if (response.ok) {
-			mutate(`${process.env.NEXT_PUBLIC_API}/records`);
+			mutate();
 			closeAddRecord();
 		}
 		setErrors(data.message);

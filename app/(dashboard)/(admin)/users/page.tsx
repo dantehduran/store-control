@@ -9,6 +9,7 @@ import fetcher from '@/lib/fetcher';
 import AddUser from './AddUser';
 import EditUser from './EditUser';
 import { User } from '@/types';
+import Pagination from '@/components/Pagination';
 
 const columns = [
 	{
@@ -25,8 +26,8 @@ const columns = [
 		accessor: (value: string) => format(new Date(value), 'dd/MM/yyyy'),
 	},
 ];
-const getUsers = async () => {
-	const response = await fetcher({ url: `${process.env.NEXT_PUBLIC_API}/users`, method: 'GET' });
+const getUsers = async (url: string) => {
+	const response = await fetcher({ url, method: 'GET' });
 	const data = await response.json();
 	if (!response.ok) {
 		const error = new Error(data.message);
@@ -35,10 +36,13 @@ const getUsers = async () => {
 	}
 	return data;
 };
+let pageSize = 10;
 
 export default function UsersPage() {
 	const [addActive, setAddActive] = useState(false);
 	const [editActive, setEditActive] = useState(false);
+	const [currentPage, setCurrentPage] = useState(1);
+
 	const [user, setUser] = useState<User | null>(null);
 	const handleDelete = async (id: number) => {
 		await fetcher({ url: `${process.env.NEXT_PUBLIC_API}/users/${id}`, method: 'DELETE' });
@@ -48,7 +52,10 @@ export default function UsersPage() {
 		setEditActive(true);
 		setUser(user);
 	};
-	const { data, isLoading, error, mutate } = useSWR<User[]>(`${process.env.NEXT_PUBLIC_API}/users`, getUsers);
+	const { data, isLoading, error, mutate } = useSWR<{ rows: User[]; totalCount: number }>(
+		`${process.env.NEXT_PUBLIC_API}/users?currentPage=${currentPage}&limit=${pageSize}`,
+		getUsers
+	);
 	return (
 		<div className="flex flex-col px-10">
 			<div className="flex items-center justify-between py-7">
@@ -65,14 +72,24 @@ export default function UsersPage() {
 				</button>
 			</div>
 			<hr className="py-2" />
-			{addActive && <AddUser closeAddUser={() => setAddActive(false)} />}
+			{addActive && <AddUser closeAddUser={() => setAddActive(false)} mutate={mutate} />}
 
-			{editActive && user != null && <EditUser closeEditUser={() => setEditActive(false)} user={user} />}
+			{editActive && user != null && (
+				<EditUser closeEditUser={() => setEditActive(false)} user={user} mutate={mutate} />
+			)}
 			{isLoading && <span>loading</span>}
 			{error && data === undefined && <span>{error}</span>}
-			{!error && !isLoading && (
-				<Table data={data || []} columns={columns} handleDelete={handleDelete} handleEdit={handleEdit} />
-			)}
+
+			<Table data={data?.rows || []} columns={columns} handleDelete={handleDelete} handleEdit={handleEdit} />
+
+			<div className="flex justify-end mt-8">
+				<Pagination
+					currentPage={currentPage}
+					totalCount={data?.totalCount || 0}
+					pageSize={pageSize}
+					onPageChange={(page) => setCurrentPage(page)}
+				/>
+			</div>
 		</div>
 	);
 }
